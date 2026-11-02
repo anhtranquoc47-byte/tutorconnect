@@ -10,7 +10,7 @@ namespace TutorConnect.Infrastructure.SqlServer.Configuration
         {
             builder.ToTable("Reviews", table =>
             {
-                table.HasCheckConstraint("CK_Reviews_Rating", "[Rating] BETWEEN 1 AND 5");
+                table.HasCheckConstraint("CK_Reviews_Rating", "\"Rating\" BETWEEN 1 AND 5");
             });
 
             builder.HasKey(r => r.Id);

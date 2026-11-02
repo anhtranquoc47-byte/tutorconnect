@@ -10,19 +10,19 @@ namespace TutorConnect.Infrastructure.SqlServer.Configuration
         {
             builder.ToTable("TutorProfiles", table =>
             {
-                table.HasCheckConstraint("CK_TutorProfiles_ExperienceYears", "[ExperienceYears] BETWEEN 0 AND 80");
+                table.HasCheckConstraint("CK_TutorProfiles_ExperienceYears", "\"ExperienceYears\" BETWEEN 0 AND 80");
                 table.HasCheckConstraint(
                     "CK_TutorProfiles_ApprovalStatus",
-                    "[ApprovalStatus] IN ('Draft', 'Pending', 'Approved', 'Rejected', 'Suspended')");
+                    "\"ApprovalStatus\" IN ('Draft', 'Pending', 'Approved', 'Rejected', 'Suspended')");
                 table.HasCheckConstraint(
                     "CK_TutorProfiles_ApprovalFields",
-                    "([ApprovalStatus] = 'Draft' AND [SubmittedAtUtc] IS NULL AND [ReviewedByAdminId] IS NULL AND [ReviewedAtUtc] IS NULL) OR " +
-                    "([ApprovalStatus] = 'Pending' AND [SubmittedAtUtc] IS NOT NULL AND [ReviewedByAdminId] IS NULL AND [ReviewedAtUtc] IS NULL) OR " +
-                    "([ApprovalStatus] = 'Approved' AND [SubmittedAtUtc] IS NOT NULL AND [ReviewedByAdminId] IS NOT NULL AND [ReviewedAtUtc] IS NOT NULL) OR " +
-                    "([ApprovalStatus] IN ('Rejected', 'Suspended') AND [SubmittedAtUtc] IS NOT NULL AND [ReviewedByAdminId] IS NOT NULL AND [ReviewedAtUtc] IS NOT NULL AND NULLIF(LTRIM(RTRIM([ReviewNote])), '') IS NOT NULL)");
+                    "(\"ApprovalStatus\" = 'Draft' AND \"SubmittedAtUtc\" IS NULL AND \"ReviewedByAdminId\" IS NULL AND \"ReviewedAtUtc\" IS NULL) OR " +
+                    "(\"ApprovalStatus\" = 'Pending' AND \"SubmittedAtUtc\" IS NOT NULL AND \"ReviewedByAdminId\" IS NULL AND \"ReviewedAtUtc\" IS NULL) OR " +
+                    "(\"ApprovalStatus\" = 'Approved' AND \"SubmittedAtUtc\" IS NOT NULL AND \"ReviewedByAdminId\" IS NOT NULL AND \"ReviewedAtUtc\" IS NOT NULL) OR " +
+                    "(\"ApprovalStatus\" IN ('Rejected', 'Suspended') AND \"SubmittedAtUtc\" IS NOT NULL AND \"ReviewedByAdminId\" IS NOT NULL AND \"ReviewedAtUtc\" IS NOT NULL AND NULLIF(LTRIM(RTRIM(\"ReviewNote\")), '') IS NOT NULL)");
                 table.HasCheckConstraint(
                     "CK_TutorProfiles_ReviewChronology",
-                    "[ReviewedAtUtc] IS NULL OR ([SubmittedAtUtc] IS NOT NULL AND [ReviewedAtUtc] >= [SubmittedAtUtc])");
+                    "\"ReviewedAtUtc\" IS NULL OR (\"SubmittedAtUtc\" IS NOT NULL AND \"ReviewedAtUtc\" >= \"SubmittedAtUtc\")");
             });
 
             builder.HasKey(p => p.UserId);
@@ -36,8 +36,8 @@ namespace TutorConnect.Infrastructure.SqlServer.Configuration
                 .HasMaxLength(20)
                 .IsRequired();
             builder.Property(p => p.ReviewNote).HasMaxLength(1000);
-            builder.Property(p => p.SubmittedAtUtc).HasColumnType("datetime2(0)");
-            builder.Property(p => p.ReviewedAtUtc).HasColumnType("datetime2(0)");
+            builder.Property(p => p.SubmittedAtUtc).HasColumnType("timestamp(0)");
+            builder.Property(p => p.ReviewedAtUtc).HasColumnType("timestamp(0)");
 
             builder.HasOne(p => p.User)
                 .WithOne(u => u.TutorProfile)
@@ -51,7 +51,7 @@ namespace TutorConnect.Infrastructure.SqlServer.Configuration
 
             builder.HasIndex(p => p.ApprovalStatus);
             builder.HasIndex(p => p.ReviewedByAdminId)
-                .HasFilter("[ReviewedByAdminId] IS NOT NULL");
+                .HasFilter("\"ReviewedByAdminId\" IS NOT NULL");
         }
     }
 }

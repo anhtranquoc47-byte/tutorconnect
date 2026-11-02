@@ -10,21 +10,21 @@ namespace TutorConnect.Infrastructure.SqlServer.Configuration
         {
             builder.ToTable("Complaints", table =>
             {
-                table.HasCheckConstraint("CK_Complaints_Type_NotBlank", "NULLIF(LTRIM(RTRIM([Type])), '') IS NOT NULL");
-                table.HasCheckConstraint("CK_Complaints_Description_NotBlank", "NULLIF(LTRIM(RTRIM([Description])), '') IS NOT NULL");
+                table.HasCheckConstraint("CK_Complaints_Type_NotBlank", "NULLIF(LTRIM(RTRIM(\"Type\")), '') IS NOT NULL");
+                table.HasCheckConstraint("CK_Complaints_Description_NotBlank", "NULLIF(LTRIM(RTRIM(\"Description\")), '') IS NOT NULL");
                 table.HasCheckConstraint(
                     "CK_Complaints_DifferentUsers",
-                    "[CreatedByUserId] <> [AgainstUserId]");
+                    "\"CreatedByUserId\" <> \"AgainstUserId\"");
                 table.HasCheckConstraint(
                     "CK_Complaints_Status",
-                    "[Status] IN ('Open', 'InReview', 'Resolved', 'Rejected')");
+                    "\"Status\" IN ('Open', 'InReview', 'Resolved', 'Rejected')");
                 table.HasCheckConstraint(
                     "CK_Complaints_ResolutionFields",
-                    "([Status] IN ('Open', 'InReview') AND [AdminResponse] IS NULL AND [ResolvedByAdminId] IS NULL AND [ResolvedAtUtc] IS NULL) OR " +
-                    "([Status] IN ('Resolved', 'Rejected') AND NULLIF(LTRIM(RTRIM([AdminResponse])), '') IS NOT NULL AND [ResolvedByAdminId] IS NOT NULL AND [ResolvedAtUtc] IS NOT NULL)");
+                    "(\"Status\" IN ('Open', 'InReview') AND \"AdminResponse\" IS NULL AND \"ResolvedByAdminId\" IS NULL AND \"ResolvedAtUtc\" IS NULL) OR " +
+                    "(\"Status\" IN ('Resolved', 'Rejected') AND NULLIF(LTRIM(RTRIM(\"AdminResponse\")), '') IS NOT NULL AND \"ResolvedByAdminId\" IS NOT NULL AND \"ResolvedAtUtc\" IS NOT NULL)");
                 table.HasCheckConstraint(
                     "CK_Complaints_ResolutionChronology",
-                    "[ResolvedAtUtc] IS NULL OR [ResolvedAtUtc] >= [SubmittedAtUtc]");
+                    "\"ResolvedAtUtc\" IS NULL OR \"ResolvedAtUtc\" >= \"SubmittedAtUtc\"");
             });
 
             builder.HasKey(c => c.Id);
@@ -34,8 +34,8 @@ namespace TutorConnect.Infrastructure.SqlServer.Configuration
             builder.Property(c => c.EvidenceUrl).HasMaxLength(1000);
             builder.Property(c => c.Status).HasConversion<string>().HasMaxLength(20).IsRequired();
             builder.Property(c => c.AdminResponse).HasMaxLength(2000);
-            builder.Property(c => c.SubmittedAtUtc).HasColumnType("datetime2(0)").IsRequired();
-            builder.Property(c => c.ResolvedAtUtc).HasColumnType("datetime2(0)");
+            builder.Property(c => c.SubmittedAtUtc).HasColumnType("timestamp(0)").IsRequired();
+            builder.Property(c => c.ResolvedAtUtc).HasColumnType("timestamp(0)");
 
             builder.HasOne(c => c.CreatedByUser)
                 .WithMany(u => u.CreatedComplaints)
@@ -60,8 +60,8 @@ namespace TutorConnect.Infrastructure.SqlServer.Configuration
             builder.HasIndex(c => new { c.Status, c.SubmittedAtUtc });
             builder.HasIndex(c => new { c.CreatedByUserId, c.SubmittedAtUtc });
             builder.HasIndex(c => new { c.AgainstUserId, c.SubmittedAtUtc });
-            builder.HasIndex(c => c.BookingId).HasFilter("[BookingId] IS NOT NULL");
-            builder.HasIndex(c => c.ResolvedByAdminId).HasFilter("[ResolvedByAdminId] IS NOT NULL");
+            builder.HasIndex(c => c.BookingId).HasFilter("\"BookingId\" IS NOT NULL");
+            builder.HasIndex(c => c.ResolvedByAdminId).HasFilter("\"ResolvedByAdminId\" IS NOT NULL");
         }
     }
 }

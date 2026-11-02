@@ -10,8 +10,8 @@ namespace TutorConnect.Infrastructure.SqlServer.Configuration
         {
             builder.ToTable("TutorSubjects", table =>
             {
-                table.HasCheckConstraint("CK_TutorSubjects_Fee", "[FeePerSessionCredits] > 0");
-                table.HasCheckConstraint("CK_TutorSubjects_TeachingLevel_NotBlank", "NULLIF(LTRIM(RTRIM([TeachingLevel])), '') IS NOT NULL");
+                table.HasCheckConstraint("CK_TutorSubjects_Fee", "\"FeePerSessionCredits\" > 0");
+                table.HasCheckConstraint("CK_TutorSubjects_TeachingLevel_NotBlank", "NULLIF(LTRIM(RTRIM(\"TeachingLevel\")), '') IS NOT NULL");
             });
 
             builder.HasKey(ts => ts.Id);

@@ -10,11 +10,11 @@ namespace TutorConnect.Infrastructure.SqlServer.Configuration
         {
             builder.ToTable("LearningMilestones", table =>
             {
-                table.HasCheckConstraint("CK_LearningMilestones_OrderNumber", "[OrderNumber] > 0");
-                table.HasCheckConstraint("CK_LearningMilestones_Title_NotBlank", "NULLIF(LTRIM(RTRIM([Title])), '') IS NOT NULL");
+                table.HasCheckConstraint("CK_LearningMilestones_OrderNumber", "\"OrderNumber\" > 0");
+                table.HasCheckConstraint("CK_LearningMilestones_Title_NotBlank", "NULLIF(LTRIM(RTRIM(\"Title\")), '') IS NOT NULL");
                 table.HasCheckConstraint(
                     "CK_LearningMilestones_Status",
-                    "[Status] IN ('NotStarted', 'InProgress', 'Completed', 'Cancelled')");
+                    "\"Status\" IN ('NotStarted', 'InProgress', 'Completed', 'Cancelled')");
             });
 
             builder.HasKey(m => m.Id);

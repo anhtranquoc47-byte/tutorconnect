@@ -13,8 +13,8 @@ namespace TutorConnect.Infrastructure.SqlServer.Configuration
         {
             builder.ToTable("Users", table =>
             {
-                table.HasCheckConstraint("CK_Users_Role", "[Role] IN ('Admin', 'Tutor', 'Student')");
-                table.HasCheckConstraint("CK_Users_Status", "[Status] IN ('Active', 'Locked', 'Inactive')");
+                table.HasCheckConstraint("CK_Users_Role", "\"Role\" IN ('Admin', 'Tutor', 'Student')");
+                table.HasCheckConstraint("CK_Users_Status", "\"Status\" IN ('Active', 'Locked', 'Inactive')");
             });
 
             builder.HasKey(u => u.Id);

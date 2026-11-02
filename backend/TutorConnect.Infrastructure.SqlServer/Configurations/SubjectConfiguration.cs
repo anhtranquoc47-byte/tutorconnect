@@ -10,8 +10,8 @@ namespace TutorConnect.Infrastructure.SqlServer.Configuration
         {
             builder.ToTable("Subjects", table =>
             {
-                table.HasCheckConstraint("CK_Subjects_Code_NotBlank", "NULLIF(LTRIM(RTRIM([Code])), '') IS NOT NULL");
-                table.HasCheckConstraint("CK_Subjects_Name_NotBlank", "NULLIF(LTRIM(RTRIM([Name])), '') IS NOT NULL");
+                table.HasCheckConstraint("CK_Subjects_Code_NotBlank", "NULLIF(LTRIM(RTRIM(\"Code\")), '') IS NOT NULL");
+                table.HasCheckConstraint("CK_Subjects_Name_NotBlank", "NULLIF(LTRIM(RTRIM(\"Name\")), '') IS NOT NULL");
             });
             builder.HasKey(s => s.Id);
             builder.Property(s => s.Id).ValueGeneratedOnAdd();

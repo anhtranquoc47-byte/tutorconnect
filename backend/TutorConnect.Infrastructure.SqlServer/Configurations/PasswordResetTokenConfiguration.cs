@@ -27,11 +27,11 @@ namespace TutorConnect.Infrastructure.SqlServer.Configuration
                 .IsUnique();
 
             builder.Property(t => t.ExpiresAtUtc)
-                .HasColumnType("datetime2(0)")
+                .HasColumnType("timestamp(0)")
                 .IsRequired();
 
             builder.Property(t => t.UsedAtUtc)
-                .HasColumnType("datetime2(0)");
+                .HasColumnType("timestamp(0)");
 
             builder.HasOne(t => t.User)
                 .WithMany()

@@ -2,8 +2,8 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TutorConnect.Infrastructure.SqlServer.Persistence;
 
 #nullable disable
@@ -18,9 +18,9 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "10.0.10")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("TutorConnect.Domain.Entities.Booking", b =>
                 {
@@ -28,39 +28,39 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<long?>("CancelledByUserId")
                         .HasColumnType("bigint");
 
                     b.Property<int>("CreditCost")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("EndTimeUtc")
-                        .HasColumnType("datetime2(0)");
+                        .HasColumnType("timestamp(0)");
 
                     b.Property<string>("MeetingUrl")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<DateTime>("StartTimeUtc")
-                        .HasColumnType("datetime2(0)");
+                        .HasColumnType("timestamp(0)");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("character varying(20)");
 
                     b.Property<string>("StatusReason")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<long>("StudentId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("StudentNote")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<long>("TutorSubjectId")
                         .HasColumnType("bigint");
@@ -68,7 +68,7 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CancelledByUserId")
-                        .HasFilter("[CancelledByUserId] IS NOT NULL");
+                        .HasFilter("\"CancelledByUserId\" IS NOT NULL");
 
                     b.HasIndex("Status", "StartTimeUtc");
 
@@ -78,13 +78,13 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
 
                     b.ToTable("Bookings", null, t =>
                         {
-                            t.HasCheckConstraint("CK_Bookings_CreditCost", "[CreditCost] > 0");
+                            t.HasCheckConstraint("CK_Bookings_CreditCost", "\"CreditCost\" > 0");
 
-                            t.HasCheckConstraint("CK_Bookings_Status", "[Status] IN ('Pending', 'Confirmed', 'Rejected', 'Cancelled', 'Completed')");
+                            t.HasCheckConstraint("CK_Bookings_Status", "\"Status\" IN ('Pending', 'Confirmed', 'Rejected', 'Cancelled', 'Completed')");
 
-                            t.HasCheckConstraint("CK_Bookings_StatusFields", "([Status] = 'Cancelled' AND [CancelledByUserId] IS NOT NULL AND NULLIF(LTRIM(RTRIM([StatusReason])), '') IS NOT NULL) OR ([Status] = 'Rejected' AND [CancelledByUserId] IS NULL AND NULLIF(LTRIM(RTRIM([StatusReason])), '') IS NOT NULL) OR ([Status] IN ('Pending', 'Confirmed', 'Completed') AND [CancelledByUserId] IS NULL AND [StatusReason] IS NULL)");
+                            t.HasCheckConstraint("CK_Bookings_StatusFields", "(\"Status\" = 'Cancelled' AND \"CancelledByUserId\" IS NOT NULL AND NULLIF(LTRIM(RTRIM(\"StatusReason\")), '') IS NOT NULL) OR (\"Status\" = 'Rejected' AND \"CancelledByUserId\" IS NULL AND NULLIF(LTRIM(RTRIM(\"StatusReason\")), '') IS NOT NULL) OR (\"Status\" IN ('Pending', 'Confirmed', 'Completed') AND \"CancelledByUserId\" IS NULL AND \"StatusReason\" IS NULL)");
 
-                            t.HasCheckConstraint("CK_Bookings_Time", "[EndTimeUtc] > [StartTimeUtc]");
+                            t.HasCheckConstraint("CK_Bookings_Time", "\"EndTimeUtc\" > \"StartTimeUtc\"");
                         });
                 });
 
@@ -94,17 +94,17 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("ConversationType")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("LastMessage")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("LastMessageAtUtc")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<long>("Participant1Id")
                         .HasColumnType("bigint");
@@ -113,7 +113,7 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<long?>("TutorSubjectId")
                         .HasColumnType("bigint");
@@ -133,26 +133,26 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("AttachmentUrl")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<long>("ConversationId")
                         .HasColumnType("bigint");
 
                     b.Property<bool>("IsRead")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<long>("SenderId")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime>("SentAtUtc")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
@@ -169,11 +169,11 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("AdminResponse")
                         .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
+                        .HasColumnType("character varying(2000)");
 
                     b.Property<long>("AgainstUserId")
                         .HasColumnType("bigint");
@@ -187,14 +187,14 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
+                        .HasColumnType("character varying(2000)");
 
                     b.Property<string>("EvidenceUrl")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<DateTime?>("ResolvedAtUtc")
-                        .HasColumnType("datetime2(0)");
+                        .HasColumnType("timestamp(0)");
 
                     b.Property<long?>("ResolvedByAdminId")
                         .HasColumnType("bigint");
@@ -202,23 +202,23 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("character varying(20)");
 
                     b.Property<DateTime>("SubmittedAtUtc")
-                        .HasColumnType("datetime2(0)");
+                        .HasColumnType("timestamp(0)");
 
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("character varying(50)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BookingId")
-                        .HasFilter("[BookingId] IS NOT NULL");
+                        .HasFilter("\"BookingId\" IS NOT NULL");
 
                     b.HasIndex("ResolvedByAdminId")
-                        .HasFilter("[ResolvedByAdminId] IS NOT NULL");
+                        .HasFilter("\"ResolvedByAdminId\" IS NOT NULL");
 
                     b.HasIndex("AgainstUserId", "SubmittedAtUtc");
 
@@ -228,17 +228,17 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
 
                     b.ToTable("Complaints", null, t =>
                         {
-                            t.HasCheckConstraint("CK_Complaints_Description_NotBlank", "NULLIF(LTRIM(RTRIM([Description])), '') IS NOT NULL");
+                            t.HasCheckConstraint("CK_Complaints_Description_NotBlank", "NULLIF(LTRIM(RTRIM(\"Description\")), '') IS NOT NULL");
 
-                            t.HasCheckConstraint("CK_Complaints_DifferentUsers", "[CreatedByUserId] <> [AgainstUserId]");
+                            t.HasCheckConstraint("CK_Complaints_DifferentUsers", "\"CreatedByUserId\" <> \"AgainstUserId\"");
 
-                            t.HasCheckConstraint("CK_Complaints_ResolutionChronology", "[ResolvedAtUtc] IS NULL OR [ResolvedAtUtc] >= [SubmittedAtUtc]");
+                            t.HasCheckConstraint("CK_Complaints_ResolutionChronology", "\"ResolvedAtUtc\" IS NULL OR \"ResolvedAtUtc\" >= \"SubmittedAtUtc\"");
 
-                            t.HasCheckConstraint("CK_Complaints_ResolutionFields", "([Status] IN ('Open', 'InReview') AND [AdminResponse] IS NULL AND [ResolvedByAdminId] IS NULL AND [ResolvedAtUtc] IS NULL) OR ([Status] IN ('Resolved', 'Rejected') AND NULLIF(LTRIM(RTRIM([AdminResponse])), '') IS NOT NULL AND [ResolvedByAdminId] IS NOT NULL AND [ResolvedAtUtc] IS NOT NULL)");
+                            t.HasCheckConstraint("CK_Complaints_ResolutionFields", "(\"Status\" IN ('Open', 'InReview') AND \"AdminResponse\" IS NULL AND \"ResolvedByAdminId\" IS NULL AND \"ResolvedAtUtc\" IS NULL) OR (\"Status\" IN ('Resolved', 'Rejected') AND NULLIF(LTRIM(RTRIM(\"AdminResponse\")), '') IS NOT NULL AND \"ResolvedByAdminId\" IS NOT NULL AND \"ResolvedAtUtc\" IS NOT NULL)");
 
-                            t.HasCheckConstraint("CK_Complaints_Status", "[Status] IN ('Open', 'InReview', 'Resolved', 'Rejected')");
+                            t.HasCheckConstraint("CK_Complaints_Status", "\"Status\" IN ('Open', 'InReview', 'Resolved', 'Rejected')");
 
-                            t.HasCheckConstraint("CK_Complaints_Type_NotBlank", "NULLIF(LTRIM(RTRIM([Type])), '') IS NOT NULL");
+                            t.HasCheckConstraint("CK_Complaints_Type_NotBlank", "NULLIF(LTRIM(RTRIM(\"Type\")), '') IS NOT NULL");
                         });
                 });
 
@@ -248,16 +248,16 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Description")
                         .HasMaxLength(1500)
-                        .HasColumnType("nvarchar(1500)");
+                        .HasColumnType("character varying(1500)");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("character varying(20)");
 
                     b.Property<long>("StudentId")
                         .HasColumnType("bigint");
@@ -268,7 +268,7 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
+                        .HasColumnType("character varying(250)");
 
                     b.Property<long>("TutorSubjectId")
                         .HasColumnType("bigint");
@@ -281,9 +281,9 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
 
                     b.ToTable("LearningGoals", null, t =>
                         {
-                            t.HasCheckConstraint("CK_LearningGoals_Status", "[Status] IN ('NotStarted', 'InProgress', 'Completed', 'Cancelled')");
+                            t.HasCheckConstraint("CK_LearningGoals_Status", "\"Status\" IN ('NotStarted', 'InProgress', 'Completed', 'Cancelled')");
 
-                            t.HasCheckConstraint("CK_LearningGoals_Title_NotBlank", "NULLIF(LTRIM(RTRIM([Title])), '') IS NOT NULL");
+                            t.HasCheckConstraint("CK_LearningGoals_Title_NotBlank", "NULLIF(LTRIM(RTRIM(\"Title\")), '') IS NOT NULL");
                         });
                 });
 
@@ -293,11 +293,11 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Description")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<long>("LearningGoalId")
                         .HasColumnType("bigint");
@@ -308,7 +308,7 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("character varying(20)");
 
                     b.Property<DateOnly?>("TargetDate")
                         .HasColumnType("date");
@@ -316,7 +316,7 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
+                        .HasColumnType("character varying(250)");
 
                     b.HasKey("Id");
 
@@ -327,11 +327,11 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
 
                     b.ToTable("LearningMilestones", null, t =>
                         {
-                            t.HasCheckConstraint("CK_LearningMilestones_OrderNumber", "[OrderNumber] > 0");
+                            t.HasCheckConstraint("CK_LearningMilestones_OrderNumber", "\"OrderNumber\" > 0");
 
-                            t.HasCheckConstraint("CK_LearningMilestones_Status", "[Status] IN ('NotStarted', 'InProgress', 'Completed', 'Cancelled')");
+                            t.HasCheckConstraint("CK_LearningMilestones_Status", "\"Status\" IN ('NotStarted', 'InProgress', 'Completed', 'Cancelled')");
 
-                            t.HasCheckConstraint("CK_LearningMilestones_Title_NotBlank", "NULLIF(LTRIM(RTRIM([Title])), '') IS NOT NULL");
+                            t.HasCheckConstraint("CK_LearningMilestones_Title_NotBlank", "NULLIF(LTRIM(RTRIM(\"Title\")), '') IS NOT NULL");
                         });
                 });
 
@@ -341,10 +341,10 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("ExpiresAtUtc")
-                        .HasColumnType("datetime2(0)");
+                        .HasColumnType("timestamp(0)");
 
                     b.Property<string>("TokenHash")
                         .IsRequired()
@@ -352,7 +352,7 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
                         .IsFixedLength();
 
                     b.Property<DateTime?>("UsedAtUtc")
-                        .HasColumnType("datetime2(0)");
+                        .HasColumnType("timestamp(0)");
 
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
@@ -373,13 +373,13 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("ExpiresAtUtc")
-                        .HasColumnType("datetime2(0)");
+                        .HasColumnType("timestamp(0)");
 
                     b.Property<DateTime?>("RevokedAtUtc")
-                        .HasColumnType("datetime2(0)");
+                        .HasColumnType("timestamp(0)");
 
                     b.Property<string>("TokenHash")
                         .IsRequired()
@@ -405,29 +405,29 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<long>("BookingId")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime>("OriginalEndTimeUtc")
-                        .HasColumnType("datetime2(0)");
+                        .HasColumnType("timestamp(0)");
 
                     b.Property<DateTime>("OriginalStartTimeUtc")
-                        .HasColumnType("datetime2(0)");
+                        .HasColumnType("timestamp(0)");
 
                     b.Property<DateTime>("ProposedEndTimeUtc")
-                        .HasColumnType("datetime2(0)");
+                        .HasColumnType("timestamp(0)");
 
                     b.Property<DateTime>("ProposedStartTimeUtc")
-                        .HasColumnType("datetime2(0)");
+                        .HasColumnType("timestamp(0)");
 
                     b.Property<string>("Reason")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<DateTime>("RequestedAtUtc")
-                        .HasColumnType("datetime2(0)");
+                        .HasColumnType("timestamp(0)");
 
                     b.Property<long>("RequestedByUserId")
                         .HasColumnType("bigint");
@@ -437,21 +437,21 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
 
                     b.Property<string>("ResponseNote")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("character varying(20)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BookingId")
                         .IsUnique()
-                        .HasFilter("[Status] = 'Pending'");
+                        .HasFilter("\"Status\" = 'Pending'");
 
                     b.HasIndex("RespondedByUserId")
-                        .HasFilter("[RespondedByUserId] IS NOT NULL");
+                        .HasFilter("\"RespondedByUserId\" IS NOT NULL");
 
                     b.HasIndex("RequestedByUserId", "RequestedAtUtc");
 
@@ -459,15 +459,15 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
 
                     b.ToTable("RescheduleRequests", null, t =>
                         {
-                            t.HasCheckConstraint("CK_RescheduleRequests_DifferentUsers", "[RespondedByUserId] IS NULL OR [RespondedByUserId] <> [RequestedByUserId]");
+                            t.HasCheckConstraint("CK_RescheduleRequests_DifferentUsers", "\"RespondedByUserId\" IS NULL OR \"RespondedByUserId\" <> \"RequestedByUserId\"");
 
-                            t.HasCheckConstraint("CK_RescheduleRequests_OriginalTime", "[OriginalEndTimeUtc] > [OriginalStartTimeUtc]");
+                            t.HasCheckConstraint("CK_RescheduleRequests_OriginalTime", "\"OriginalEndTimeUtc\" > \"OriginalStartTimeUtc\"");
 
-                            t.HasCheckConstraint("CK_RescheduleRequests_ProposedTime", "[ProposedEndTimeUtc] > [ProposedStartTimeUtc]");
+                            t.HasCheckConstraint("CK_RescheduleRequests_ProposedTime", "\"ProposedEndTimeUtc\" > \"ProposedStartTimeUtc\"");
 
-                            t.HasCheckConstraint("CK_RescheduleRequests_Status", "[Status] IN ('Pending', 'Accepted', 'Rejected', 'Cancelled')");
+                            t.HasCheckConstraint("CK_RescheduleRequests_Status", "\"Status\" IN ('Pending', 'Accepted', 'Rejected', 'Cancelled')");
 
-                            t.HasCheckConstraint("CK_RescheduleRequests_StatusFields", "([Status] = 'Pending' AND [RespondedByUserId] IS NULL AND [ResponseNote] IS NULL) OR ([Status] IN ('Accepted', 'Rejected') AND [RespondedByUserId] IS NOT NULL) OR ([Status] = 'Cancelled' AND [RespondedByUserId] IS NULL AND [ResponseNote] IS NULL)");
+                            t.HasCheckConstraint("CK_RescheduleRequests_StatusFields", "(\"Status\" = 'Pending' AND \"RespondedByUserId\" IS NULL AND \"ResponseNote\" IS NULL) OR (\"Status\" IN ('Accepted', 'Rejected') AND \"RespondedByUserId\" IS NOT NULL) OR (\"Status\" = 'Cancelled' AND \"RespondedByUserId\" IS NULL AND \"ResponseNote\" IS NULL)");
                         });
                 });
 
@@ -477,17 +477,17 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<long>("BookingId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Comment")
                         .HasMaxLength(1500)
-                        .HasColumnType("nvarchar(1500)");
+                        .HasColumnType("character varying(1500)");
 
                     b.Property<byte>("Rating")
-                        .HasColumnType("tinyint");
+                        .HasColumnType("smallint");
 
                     b.Property<long>("ReviewerId")
                         .HasColumnType("bigint");
@@ -501,7 +501,7 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
 
                     b.ToTable("Reviews", null, t =>
                         {
-                            t.HasCheckConstraint("CK_Reviews_Rating", "[Rating] BETWEEN 1 AND 5");
+                            t.HasCheckConstraint("CK_Reviews_Rating", "\"Rating\" BETWEEN 1 AND 5");
                         });
                 });
 
@@ -512,23 +512,23 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
 
                     b.Property<decimal>("GoalProgressPercent")
                         .HasPrecision(5, 2)
-                        .HasColumnType("decimal(5,2)");
+                        .HasColumnType("numeric(5,2)");
 
                     b.Property<long>("LearningGoalId")
                         .HasColumnType("bigint");
 
                     b.Property<decimal?>("MaxScore")
                         .HasPrecision(7, 2)
-                        .HasColumnType("decimal(7,2)");
+                        .HasColumnType("numeric(7,2)");
 
                     b.Property<decimal?>("Score")
                         .HasPrecision(7, 2)
-                        .HasColumnType("decimal(7,2)");
+                        .HasColumnType("numeric(7,2)");
 
                     b.Property<string>("TutorComment")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
+                        .HasColumnType("character varying(2000)");
 
                     b.HasKey("BookingId");
 
@@ -536,11 +536,11 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
 
                     b.ToTable("SessionProgress", null, t =>
                         {
-                            t.HasCheckConstraint("CK_SessionProgress_GoalProgress", "[GoalProgressPercent] BETWEEN 0 AND 100");
+                            t.HasCheckConstraint("CK_SessionProgress_GoalProgress", "\"GoalProgressPercent\" BETWEEN 0 AND 100");
 
-                            t.HasCheckConstraint("CK_SessionProgress_Score", "([Score] IS NULL AND [MaxScore] IS NULL) OR ([Score] IS NOT NULL AND [MaxScore] IS NOT NULL AND [MaxScore] > 0 AND [Score] >= 0 AND [Score] <= [MaxScore])");
+                            t.HasCheckConstraint("CK_SessionProgress_Score", "(\"Score\" IS NULL AND \"MaxScore\" IS NULL) OR (\"Score\" IS NOT NULL AND \"MaxScore\" IS NOT NULL AND \"MaxScore\" > 0 AND \"Score\" >= 0 AND \"Score\" <= \"MaxScore\")");
 
-                            t.HasCheckConstraint("CK_SessionProgress_TutorComment_NotBlank", "NULLIF(LTRIM(RTRIM([TutorComment])), '') IS NOT NULL");
+                            t.HasCheckConstraint("CK_SessionProgress_TutorComment_NotBlank", "NULLIF(LTRIM(RTRIM(\"TutorComment\")), '') IS NOT NULL");
                         });
                 });
 
@@ -550,24 +550,24 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("character varying(30)");
 
                     b.Property<string>("Description")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                        .HasColumnType("character varying(150)");
 
                     b.HasKey("Id");
 
@@ -581,9 +581,9 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
 
                     b.ToTable("Subjects", null, t =>
                         {
-                            t.HasCheckConstraint("CK_Subjects_Code_NotBlank", "NULLIF(LTRIM(RTRIM([Code])), '') IS NOT NULL");
+                            t.HasCheckConstraint("CK_Subjects_Code_NotBlank", "NULLIF(LTRIM(RTRIM(\"Code\")), '') IS NOT NULL");
 
-                            t.HasCheckConstraint("CK_Subjects_Name_NotBlank", "NULLIF(LTRIM(RTRIM([Name])), '') IS NOT NULL");
+                            t.HasCheckConstraint("CK_Subjects_Name_NotBlank", "NULLIF(LTRIM(RTRIM(\"Name\")), '') IS NOT NULL");
                         });
                 });
 
@@ -593,16 +593,16 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<int>("DayOfWeek")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<TimeOnly>("EndTime")
                         .HasColumnType("time(0)");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<TimeOnly>("StartTime")
                         .HasColumnType("time(0)");
@@ -619,9 +619,9 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
 
                     b.ToTable("TutorAvailabilities", null, t =>
                         {
-                            t.HasCheckConstraint("CK_TutorAvailabilities_DayOfWeek", "[DayOfWeek] BETWEEN 0 AND 6");
+                            t.HasCheckConstraint("CK_TutorAvailabilities_DayOfWeek", "\"DayOfWeek\" BETWEEN 0 AND 6");
 
-                            t.HasCheckConstraint("CK_TutorAvailabilities_Time", "[EndTime] > [StartTime]");
+                            t.HasCheckConstraint("CK_TutorAvailabilities_Time", "\"EndTime\" > \"StartTime\"");
                         });
                 });
 
@@ -633,52 +633,52 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
                     b.Property<string>("ApprovalStatus")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("character varying(20)");
 
                     b.Property<string>("Bio")
                         .HasMaxLength(1500)
-                        .HasColumnType("nvarchar(1500)");
+                        .HasColumnType("character varying(1500)");
 
                     b.Property<short>("ExperienceYears")
                         .HasColumnType("smallint");
 
                     b.Property<string>("Qualification")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<string>("ReviewNote")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<DateTime?>("ReviewedAtUtc")
-                        .HasColumnType("datetime2(0)");
+                        .HasColumnType("timestamp(0)");
 
                     b.Property<long?>("ReviewedByAdminId")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime?>("SubmittedAtUtc")
-                        .HasColumnType("datetime2(0)");
+                        .HasColumnType("timestamp(0)");
 
                     b.Property<string>("VerificationDocumentUrl")
                         .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("character varying(1000)");
 
                     b.HasKey("UserId");
 
                     b.HasIndex("ApprovalStatus");
 
                     b.HasIndex("ReviewedByAdminId")
-                        .HasFilter("[ReviewedByAdminId] IS NOT NULL");
+                        .HasFilter("\"ReviewedByAdminId\" IS NOT NULL");
 
                     b.ToTable("TutorProfiles", null, t =>
                         {
-                            t.HasCheckConstraint("CK_TutorProfiles_ApprovalFields", "([ApprovalStatus] = 'Draft' AND [SubmittedAtUtc] IS NULL AND [ReviewedByAdminId] IS NULL AND [ReviewedAtUtc] IS NULL) OR ([ApprovalStatus] = 'Pending' AND [SubmittedAtUtc] IS NOT NULL AND [ReviewedByAdminId] IS NULL AND [ReviewedAtUtc] IS NULL) OR ([ApprovalStatus] = 'Approved' AND [SubmittedAtUtc] IS NOT NULL AND [ReviewedByAdminId] IS NOT NULL AND [ReviewedAtUtc] IS NOT NULL) OR ([ApprovalStatus] IN ('Rejected', 'Suspended') AND [SubmittedAtUtc] IS NOT NULL AND [ReviewedByAdminId] IS NOT NULL AND [ReviewedAtUtc] IS NOT NULL AND NULLIF(LTRIM(RTRIM([ReviewNote])), '') IS NOT NULL)");
+                            t.HasCheckConstraint("CK_TutorProfiles_ApprovalFields", "(\"ApprovalStatus\" = 'Draft' AND \"SubmittedAtUtc\" IS NULL AND \"ReviewedByAdminId\" IS NULL AND \"ReviewedAtUtc\" IS NULL) OR (\"ApprovalStatus\" = 'Pending' AND \"SubmittedAtUtc\" IS NOT NULL AND \"ReviewedByAdminId\" IS NULL AND \"ReviewedAtUtc\" IS NULL) OR (\"ApprovalStatus\" = 'Approved' AND \"SubmittedAtUtc\" IS NOT NULL AND \"ReviewedByAdminId\" IS NOT NULL AND \"ReviewedAtUtc\" IS NOT NULL) OR (\"ApprovalStatus\" IN ('Rejected', 'Suspended') AND \"SubmittedAtUtc\" IS NOT NULL AND \"ReviewedByAdminId\" IS NOT NULL AND \"ReviewedAtUtc\" IS NOT NULL AND NULLIF(LTRIM(RTRIM(\"ReviewNote\")), '') IS NOT NULL)");
 
-                            t.HasCheckConstraint("CK_TutorProfiles_ApprovalStatus", "[ApprovalStatus] IN ('Draft', 'Pending', 'Approved', 'Rejected', 'Suspended')");
+                            t.HasCheckConstraint("CK_TutorProfiles_ApprovalStatus", "\"ApprovalStatus\" IN ('Draft', 'Pending', 'Approved', 'Rejected', 'Suspended')");
 
-                            t.HasCheckConstraint("CK_TutorProfiles_ExperienceYears", "[ExperienceYears] BETWEEN 0 AND 80");
+                            t.HasCheckConstraint("CK_TutorProfiles_ExperienceYears", "\"ExperienceYears\" BETWEEN 0 AND 80");
 
-                            t.HasCheckConstraint("CK_TutorProfiles_ReviewChronology", "[ReviewedAtUtc] IS NULL OR ([SubmittedAtUtc] IS NOT NULL AND [ReviewedAtUtc] >= [SubmittedAtUtc])");
+                            t.HasCheckConstraint("CK_TutorProfiles_ReviewChronology", "\"ReviewedAtUtc\" IS NULL OR (\"SubmittedAtUtc\" IS NOT NULL AND \"ReviewedAtUtc\" >= \"SubmittedAtUtc\")");
                         });
                 });
 
@@ -688,13 +688,13 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<int>("FeePerSessionCredits")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<long>("SubjectId")
                         .HasColumnType("bigint");
@@ -702,7 +702,7 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
                     b.Property<string>("TeachingLevel")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<long>("TutorId")
                         .HasColumnType("bigint");
@@ -718,9 +718,9 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
 
                     b.ToTable("TutorSubjects", null, t =>
                         {
-                            t.HasCheckConstraint("CK_TutorSubjects_Fee", "[FeePerSessionCredits] > 0");
+                            t.HasCheckConstraint("CK_TutorSubjects_Fee", "\"FeePerSessionCredits\" > 0");
 
-                            t.HasCheckConstraint("CK_TutorSubjects_TeachingLevel_NotBlank", "NULLIF(LTRIM(RTRIM([TeachingLevel])), '') IS NOT NULL");
+                            t.HasCheckConstraint("CK_TutorSubjects_TeachingLevel_NotBlank", "NULLIF(LTRIM(RTRIM(\"TeachingLevel\")), '') IS NOT NULL");
                         });
                 });
 
@@ -730,44 +730,46 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(320)
-                        .HasColumnType("nvarchar(320)");
+                        .HasColumnType("character varying(320)");
 
                     b.Property<int>("FailedLoginAttempts")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
 
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                        .HasColumnType("character varying(150)");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("character varying(500)");
 
                     b.Property<string>("Phone")
                         .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("character varying(30)");
 
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("character varying(20)");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("character varying(20)");
 
                     b.Property<string>("TimeZoneId")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("Id");
 
@@ -776,9 +778,9 @@ namespace TutorConnect.Infrastructure.SqlServer.Migrations
 
                     b.ToTable("Users", null, t =>
                         {
-                            t.HasCheckConstraint("CK_Users_Role", "[Role] IN ('Admin', 'Tutor', 'Student')");
+                            t.HasCheckConstraint("CK_Users_Role", "\"Role\" IN ('Admin', 'Tutor', 'Student')");
 
-                            t.HasCheckConstraint("CK_Users_Status", "[Status] IN ('Active', 'Locked', 'Inactive')");
+                            t.HasCheckConstraint("CK_Users_Status", "\"Status\" IN ('Active', 'Locked', 'Inactive')");
                         });
                 });
 

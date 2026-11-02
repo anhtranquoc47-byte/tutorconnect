@@ -10,31 +10,31 @@ namespace TutorConnect.Infrastructure.SqlServer.Configuration
         {
             builder.ToTable("RescheduleRequests", table =>
             {
-                table.HasCheckConstraint("CK_RescheduleRequests_OriginalTime", "[OriginalEndTimeUtc] > [OriginalStartTimeUtc]");
-                table.HasCheckConstraint("CK_RescheduleRequests_ProposedTime", "[ProposedEndTimeUtc] > [ProposedStartTimeUtc]");
+                table.HasCheckConstraint("CK_RescheduleRequests_OriginalTime", "\"OriginalEndTimeUtc\" > \"OriginalStartTimeUtc\"");
+                table.HasCheckConstraint("CK_RescheduleRequests_ProposedTime", "\"ProposedEndTimeUtc\" > \"ProposedStartTimeUtc\"");
                 table.HasCheckConstraint(
                     "CK_RescheduleRequests_Status",
-                    "[Status] IN ('Pending', 'Accepted', 'Rejected', 'Cancelled')");
+                    "\"Status\" IN ('Pending', 'Accepted', 'Rejected', 'Cancelled')");
                 table.HasCheckConstraint(
                     "CK_RescheduleRequests_DifferentUsers",
-                    "[RespondedByUserId] IS NULL OR [RespondedByUserId] <> [RequestedByUserId]");
+                    "\"RespondedByUserId\" IS NULL OR \"RespondedByUserId\" <> \"RequestedByUserId\"");
                 table.HasCheckConstraint(
                     "CK_RescheduleRequests_StatusFields",
-                    "([Status] = 'Pending' AND [RespondedByUserId] IS NULL AND [ResponseNote] IS NULL) OR " +
-                    "([Status] IN ('Accepted', 'Rejected') AND [RespondedByUserId] IS NOT NULL) OR " +
-                    "([Status] = 'Cancelled' AND [RespondedByUserId] IS NULL AND [ResponseNote] IS NULL)");
+                    "(\"Status\" = 'Pending' AND \"RespondedByUserId\" IS NULL AND \"ResponseNote\" IS NULL) OR " +
+                    "(\"Status\" IN ('Accepted', 'Rejected') AND \"RespondedByUserId\" IS NOT NULL) OR " +
+                    "(\"Status\" = 'Cancelled' AND \"RespondedByUserId\" IS NULL AND \"ResponseNote\" IS NULL)");
             });
 
             builder.HasKey(r => r.Id);
             builder.Property(r => r.Id).ValueGeneratedOnAdd();
-            builder.Property(r => r.OriginalStartTimeUtc).HasColumnType("datetime2(0)").IsRequired();
-            builder.Property(r => r.OriginalEndTimeUtc).HasColumnType("datetime2(0)").IsRequired();
-            builder.Property(r => r.ProposedStartTimeUtc).HasColumnType("datetime2(0)").IsRequired();
-            builder.Property(r => r.ProposedEndTimeUtc).HasColumnType("datetime2(0)").IsRequired();
+            builder.Property(r => r.OriginalStartTimeUtc).HasColumnType("timestamp(0)").IsRequired();
+            builder.Property(r => r.OriginalEndTimeUtc).HasColumnType("timestamp(0)").IsRequired();
+            builder.Property(r => r.ProposedStartTimeUtc).HasColumnType("timestamp(0)").IsRequired();
+            builder.Property(r => r.ProposedEndTimeUtc).HasColumnType("timestamp(0)").IsRequired();
             builder.Property(r => r.Reason).HasMaxLength(1000);
             builder.Property(r => r.Status).HasConversion<string>().HasMaxLength(20).IsRequired();
             builder.Property(r => r.ResponseNote).HasMaxLength(1000);
-            builder.Property(r => r.RequestedAtUtc).HasColumnType("datetime2(0)").IsRequired();
+            builder.Property(r => r.RequestedAtUtc).HasColumnType("timestamp(0)").IsRequired();
 
             builder.HasOne(r => r.Booking)
                 .WithMany(b => b.RescheduleRequests)
@@ -53,11 +53,11 @@ namespace TutorConnect.Infrastructure.SqlServer.Configuration
 
             builder.HasIndex(r => r.BookingId)
                 .IsUnique()
-                .HasFilter("[Status] = 'Pending'");
+                .HasFilter("\"Status\" = 'Pending'");
             builder.HasIndex(r => new { r.BookingId, r.Status, r.RequestedAtUtc });
             builder.HasIndex(r => new { r.RequestedByUserId, r.RequestedAtUtc });
             builder.HasIndex(r => r.RespondedByUserId)
-                .HasFilter("[RespondedByUserId] IS NOT NULL");
+                .HasFilter("\"RespondedByUserId\" IS NOT NULL");
         }
     }
 }

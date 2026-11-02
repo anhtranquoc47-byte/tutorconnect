@@ -88,8 +88,8 @@ namespace TutorConnect.Infrastructure.SqlServer.Repositories
             {
                 var pattern = $"%{search.Trim()}%";
                 query = query.Where(u =>
-                    EF.Functions.Like(u.Email, pattern) ||
-                    EF.Functions.Like(u.FullName, pattern));
+                    EF.Functions.ILike(u.Email, pattern) ||
+                    EF.Functions.ILike(u.FullName, pattern));
             }
 
             var totalItems = await query.LongCountAsync(cancellationToken);

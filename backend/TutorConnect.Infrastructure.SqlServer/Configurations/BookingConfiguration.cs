@@ -10,22 +10,22 @@ namespace TutorConnect.Infrastructure.SqlServer.Configuration
         {
             builder.ToTable("Bookings", table =>
             {
-                table.HasCheckConstraint("CK_Bookings_Time", "[EndTimeUtc] > [StartTimeUtc]");
-                table.HasCheckConstraint("CK_Bookings_CreditCost", "[CreditCost] > 0");
+                table.HasCheckConstraint("CK_Bookings_Time", "\"EndTimeUtc\" > \"StartTimeUtc\"");
+                table.HasCheckConstraint("CK_Bookings_CreditCost", "\"CreditCost\" > 0");
                 table.HasCheckConstraint(
                     "CK_Bookings_Status",
-                    "[Status] IN ('Pending', 'Confirmed', 'Rejected', 'Cancelled', 'Completed')");
+                    "\"Status\" IN ('Pending', 'Confirmed', 'Rejected', 'Cancelled', 'Completed')");
                 table.HasCheckConstraint(
                     "CK_Bookings_StatusFields",
-                    "([Status] = 'Cancelled' AND [CancelledByUserId] IS NOT NULL AND NULLIF(LTRIM(RTRIM([StatusReason])), '') IS NOT NULL) OR " +
-                    "([Status] = 'Rejected' AND [CancelledByUserId] IS NULL AND NULLIF(LTRIM(RTRIM([StatusReason])), '') IS NOT NULL) OR " +
-                    "([Status] IN ('Pending', 'Confirmed', 'Completed') AND [CancelledByUserId] IS NULL AND [StatusReason] IS NULL)");
+                    "(\"Status\" = 'Cancelled' AND \"CancelledByUserId\" IS NOT NULL AND NULLIF(LTRIM(RTRIM(\"StatusReason\")), '') IS NOT NULL) OR " +
+                    "(\"Status\" = 'Rejected' AND \"CancelledByUserId\" IS NULL AND NULLIF(LTRIM(RTRIM(\"StatusReason\")), '') IS NOT NULL) OR " +
+                    "(\"Status\" IN ('Pending', 'Confirmed', 'Completed') AND \"CancelledByUserId\" IS NULL AND \"StatusReason\" IS NULL)");
             });
 
             builder.HasKey(b => b.Id);
             builder.Property(b => b.Id).ValueGeneratedOnAdd();
-            builder.Property(b => b.StartTimeUtc).HasColumnType("datetime2(0)").IsRequired();
-            builder.Property(b => b.EndTimeUtc).HasColumnType("datetime2(0)").IsRequired();
+            builder.Property(b => b.StartTimeUtc).HasColumnType("timestamp(0)").IsRequired();
+            builder.Property(b => b.EndTimeUtc).HasColumnType("timestamp(0)").IsRequired();
             builder.Property(b => b.CreditCost).IsRequired();
             builder.Property(b => b.Status).HasConversion<string>().HasMaxLength(20).IsRequired();
             builder.Property(b => b.StudentNote).HasMaxLength(1000);
@@ -51,7 +51,7 @@ namespace TutorConnect.Infrastructure.SqlServer.Configuration
             builder.HasIndex(b => new { b.TutorSubjectId, b.Status, b.StartTimeUtc, b.EndTimeUtc });
             builder.HasIndex(b => new { b.Status, b.StartTimeUtc });
             builder.HasIndex(b => b.CancelledByUserId)
-                .HasFilter("[CancelledByUserId] IS NOT NULL");
+                .HasFilter("\"CancelledByUserId\" IS NOT NULL");
         }
     }
 }

@@ -19,7 +19,7 @@ namespace TutorConnect.Infrastructure.SqlServer
                     "Connection string 'DefaultConnection' was not found.");
 
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString));
+                options.UseNpgsql(connectionString));
 
             // Register services
             services.AddScoped<IPasswordHasher, BcryptPasswordHasher>();

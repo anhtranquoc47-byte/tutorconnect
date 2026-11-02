@@ -6,6 +6,10 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 
+// Map DateTime to "timestamp without time zone" like SQL Server's datetime2,
+// so existing code does not need DateTimeKind.Utc everywhere.
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure JWT authentication
@@ -56,38 +60,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<TutorConnect.Infrastructure.SqlServer.Persistence.ApplicationDbContext>();
-    dbContext.Database.ExecuteSqlRaw(@"
-        IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'ChatConversations')
-        BEGIN
-            CREATE TABLE ChatConversations (
-                Id BIGINT IDENTITY(1,1) PRIMARY KEY,
-                Participant1Id BIGINT NOT NULL,
-                Participant2Id BIGINT NOT NULL,
-                ConversationType NVARCHAR(50) NOT NULL DEFAULT 'General',
-                Title NVARCHAR(255) NULL,
-                TutorSubjectId BIGINT NULL,
-                LastMessage NVARCHAR(MAX) NULL,
-                LastMessageAtUtc DATETIME2 NOT NULL DEFAULT GETUTCDATE()
-            );
-        END;
-
-        IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'ChatMessages')
-        BEGIN
-            CREATE TABLE ChatMessages (
-                Id BIGINT IDENTITY(1,1) PRIMARY KEY,
-                ConversationId BIGINT NOT NULL,
-                SenderId BIGINT NOT NULL,
-                Content NVARCHAR(MAX) NOT NULL,
-                AttachmentUrl NVARCHAR(500) NULL,
-                SentAtUtc DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
-                IsRead BIT NOT NULL DEFAULT 0
-            );
-        END;
-                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('Users') AND name = 'FailedLoginAttempts')
-        BEGIN
-            ALTER TABLE Users ADD FailedLoginAttempts INT NOT NULL DEFAULT 0;
-        END;
-    ");
+    dbContext.Database.Migrate();
 }
 
 

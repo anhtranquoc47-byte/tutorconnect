@@ -12,13 +12,13 @@ namespace TutorConnect.Infrastructure.SqlServer.Configuration
             {
                 table.HasCheckConstraint(
                     "CK_SessionProgress_GoalProgress",
-                    "[GoalProgressPercent] BETWEEN 0 AND 100");
+                    "\"GoalProgressPercent\" BETWEEN 0 AND 100");
                 table.HasCheckConstraint(
                     "CK_SessionProgress_Score",
-                    "([Score] IS NULL AND [MaxScore] IS NULL) OR ([Score] IS NOT NULL AND [MaxScore] IS NOT NULL AND [MaxScore] > 0 AND [Score] >= 0 AND [Score] <= [MaxScore])");
+                    "(\"Score\" IS NULL AND \"MaxScore\" IS NULL) OR (\"Score\" IS NOT NULL AND \"MaxScore\" IS NOT NULL AND \"MaxScore\" > 0 AND \"Score\" >= 0 AND \"Score\" <= \"MaxScore\")");
                 table.HasCheckConstraint(
                     "CK_SessionProgress_TutorComment_NotBlank",
-                    "NULLIF(LTRIM(RTRIM([TutorComment])), '') IS NOT NULL");
+                    "NULLIF(LTRIM(RTRIM(\"TutorComment\")), '') IS NOT NULL");
             });
 
             builder.HasKey(p => p.BookingId);

@@ -10,8 +10,8 @@ namespace TutorConnect.Infrastructure.SqlServer.Configuration
         {
             builder.ToTable("TutorAvailabilities", table =>
             {
-                table.HasCheckConstraint("CK_TutorAvailabilities_DayOfWeek", "[DayOfWeek] BETWEEN 0 AND 6");
-                table.HasCheckConstraint("CK_TutorAvailabilities_Time", "[EndTime] > [StartTime]");
+                table.HasCheckConstraint("CK_TutorAvailabilities_DayOfWeek", "\"DayOfWeek\" BETWEEN 0 AND 6");
+                table.HasCheckConstraint("CK_TutorAvailabilities_Time", "\"EndTime\" > \"StartTime\"");
             });
 
             builder.HasKey(a => a.Id);
