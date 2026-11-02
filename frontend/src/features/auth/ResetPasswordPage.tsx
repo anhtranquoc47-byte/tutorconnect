@@ -24,11 +24,13 @@ export function ResetPasswordPage() {
       return
     }
 
-    authApi.validateResetToken(token)
-      .then((isValid) => {
-        setIsTokenValid(isValid)
-        if (!isValid) setError('Liên kết đặt lại mật khẩu đã hết hạn hoặc không hợp lệ.')
-      })
+authApi.validateResetToken(token)
+  .then((isValid: any) => {
+    const valid = typeof isValid === 'boolean' ? isValid : !!isValid?.isValid
+    setIsTokenValid(valid)
+    if (!valid) setError('Liên kết đặt lại mật khẩu đã hết hạn hoặc không hợp lệ.')
+  })
+
       .catch((err: unknown) => {
         setIsTokenValid(false)
         setError(err instanceof Error ? err.message : 'Không thể kiểm tra liên kết đặt lại mật khẩu.')

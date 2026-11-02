@@ -172,7 +172,7 @@ export function AdminDashboardPage() {
           adminApi.getUsers({ pageSize: 1000 }).catch(() => []),
           adminApi.getTutorApplications({ status: 'all' }).catch(() => []),
         ])
-        systemUsers = uRes
+        systemUsers = Array.isArray(uRes) ? uRes : (uRes as any)?.items ?? []
         tutorApplicationsList = tRes
       } catch (err) {
         console.warn('Đang đồng bộ người dùng từ hệ thống:', err)
