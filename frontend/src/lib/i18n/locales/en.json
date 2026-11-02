@@ -1,0 +1,42 @@
+{
+  "app": {
+    "name": "React Base",
+    "tagline": "Production-ready React starter"
+  },
+  "nav": {
+    "home": "Home",
+    "users": "Users",
+    "logout": "Log out"
+  },
+  "auth": {
+    "login": "Log in",
+    "email": "Email",
+    "password": "Password",
+    "signInToContinue": "Sign in to continue",
+    "invalidCredentials": "Invalid email or password"
+  },
+  "users": {
+    "title": "Users",
+    "search": "Search users…",
+    "create": "New user",
+    "empty": "No users found",
+    "name": "Name",
+    "username": "Username",
+    "email": "Email",
+    "actions": "Actions",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "createdToast": "User created",
+    "updatedToast": "User updated",
+    "deletedToast": "User deleted"
+  },
+  "common": {
+    "loading": "Loading…",
+    "retry": "Retry",
+    "error": "Something went wrong",
+    "notFound": "Page not found",
+    "backHome": "Back to home"
+  }
+}

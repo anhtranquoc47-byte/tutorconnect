@@ -1,0 +1,59 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+[Aa]rtifacts/
+[Dd]ebug/
+[Rr]elease/
+
+# IDE / user-specific files
+.vs/
+.idea/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.DotSettings.user
+
+# Test and coverage output
+TestResults/
+[Tt]est[Rr]esult*/
+*.coverage
+*.coveragexml
+coverage/
+
+# Logs and temporary files
+[Ll]ogs/
+*.log
+*.tmp
+*.bak
+*.swp
+*~
+
+# Publish output
+publish/
+*.pubxml
+*.publishproj
+
+# NuGet packages
+*.nupkg
+**/packages/*
+!**/packages/build/
+
+# Local databases and secrets
+*.mdf
+*.ldf
+*.db
+*.sqlite
+*.pfx
+*.snk
+*.secrets.json
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# OS files
+.DS_Store
+Thumbs.db

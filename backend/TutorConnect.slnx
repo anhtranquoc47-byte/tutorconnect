@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="TutorConnect.API/TutorConnect.API.csproj" />
+  <Project Path="TutorConnect.Application/TutorConnect.Application.csproj" />
+  <Project Path="TutorConnect.Domain/TutorConnect.Domain.csproj" />
+  <Project Path="TutorConnect.Infrastructure.SqlServer/TutorConnect.Infrastructure.SqlServer.csproj" />
+</Solution>

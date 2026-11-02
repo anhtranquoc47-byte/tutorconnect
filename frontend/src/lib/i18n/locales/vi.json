@@ -1,0 +1,42 @@
+{
+  "app": {
+    "name": "React Base",
+    "tagline": "Khởi tạo React sẵn sàng cho production"
+  },
+  "nav": {
+    "home": "Trang chủ",
+    "users": "Người dùng",
+    "logout": "Đăng xuất"
+  },
+  "auth": {
+    "login": "Đăng nhập",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "signInToContinue": "Đăng nhập để tiếp tục",
+    "invalidCredentials": "Email hoặc mật khẩu không đúng"
+  },
+  "users": {
+    "title": "Người dùng",
+    "search": "Tìm người dùng…",
+    "create": "Thêm mới",
+    "empty": "Không có người dùng",
+    "name": "Tên",
+    "username": "Tên đăng nhập",
+    "email": "Email",
+    "actions": "Thao tác",
+    "edit": "Sửa",
+    "delete": "Xóa",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "createdToast": "Đã tạo người dùng",
+    "updatedToast": "Đã cập nhật người dùng",
+    "deletedToast": "Đã xóa người dùng"
+  },
+  "common": {
+    "loading": "Đang tải…",
+    "retry": "Thử lại",
+    "error": "Đã có lỗi xảy ra",
+    "notFound": "Không tìm thấy trang",
+    "backHome": "Về trang chủ"
+  }
+}
