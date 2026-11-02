@@ -77,6 +77,15 @@ export default function LearningProgressTab({
   formatDisplayDate,
 }: LearningProgressTabProps) {
   const [showCreateGoalForm, setShowCreateGoalForm] = useState(false)
+  // Trạng thái Sửa Goal
+  const [isEditingGoal, setIsEditingGoal] = useState(false)
+  const [editingGoalForm, setEditingGoalForm] = useState<UpdateLearningGoalRequest>({
+    title: '',
+    description: '',
+    targetDate: '',
+  })
+  const [updatingGoal, setUpdatingGoal] = useState(false)
+
   const isCancelled =
     booking?.status === 'Cancelled' ||
     booking?.status === BookingStatus.Cancelled ||
@@ -97,15 +106,6 @@ export default function LearningProgressTab({
       </div>
     )
   }
-
-  // Trạng thái Sửa Goal
-  const [isEditingGoal, setIsEditingGoal] = useState(false)
-  const [editingGoalForm, setEditingGoalForm] = useState<UpdateLearningGoalRequest>({
-    title: '',
-    description: '',
-    targetDate: '',
-  })
-  const [updatingGoal, setUpdatingGoal] = useState(false)
 
   const currentGoal = selectedGoal
 

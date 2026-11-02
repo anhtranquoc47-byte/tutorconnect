@@ -1,0 +1,78 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  PROJECT_ID: tutorconnect-513510
+  REGION: asia-southeast1
+  REGISTRY: asia-southeast1-docker.pkg.dev/tutorconnect-513510/cloud-run-source-deploy
+  API_URL: https://tutorconnect-api-423951344786.asia-southeast1.run.app
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+      - run: dotnet restore TutorConnect.slnx
+      - run: dotnet build TutorConnect.slnx --configuration Release --no-restore
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+  deploy:
+    needs: [backend, frontend]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    concurrency: deploy-production
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v5
+
+      # Keyless auth via Workload Identity Federation; only this repo is allowed.
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/423951344786/locations/global/workloadIdentityPools/github/providers/github-repo
+          service_account: github-deployer@tutorconnect-513510.iam.gserviceaccount.com
+      - uses: google-github-actions/setup-gcloud@v2
+      - run: gcloud auth configure-docker ${REGION}-docker.pkg.dev --quiet
+
+      - name: Deploy backend
+        run: |
+          IMAGE=$REGISTRY/tutorconnect-api:${GITHUB_SHA}
+          docker build -t $IMAGE backend
+          docker push $IMAGE
+          gcloud run deploy tutorconnect-api --image $IMAGE --region $REGION --project $PROJECT_ID --quiet
+
+      - name: Deploy frontend
+        run: |
+          IMAGE=$REGISTRY/tutorconnect-web:${GITHUB_SHA}
+          docker build --build-arg VITE_API_BASE_URL=$API_URL -t $IMAGE frontend
+          docker push $IMAGE
+          gcloud run deploy tutorconnect-web --image $IMAGE --region $REGION --project $PROJECT_ID --quiet
